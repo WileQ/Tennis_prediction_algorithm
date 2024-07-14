@@ -7,15 +7,17 @@ import time
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-def rankAndId(player):
+def rankAndId(player, proxy = None):
     """Returns rank and ID of the player."""
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=chrome_options)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+    if proxy != None:
+        options.add_argument(f"--proxy-server={proxy}")
+    driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.ultimatetennisstatistics.com/")
 
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 20)
     manage_options_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='fc-button-label']")))
     manage_options_button.click()
 
@@ -49,11 +51,13 @@ def rankAndId(player):
 
     return [rank, stat_link, name]
 
-def playerData(opponentRank, statlink):
+def playerData(opponentRank, statlink, proxy = None):
     """Returns the data collected from Ultimate Tennis Statistics website about the player."""
 
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
+    if proxy != None:
+        options.add_argument(f"--proxy-server={proxy}")
     driver = webdriver.Chrome(options=options)
 
     url = statlink
@@ -121,9 +125,14 @@ def getInputs():
     sets_in_a_match = int(input("Is this a best of 3 or best of 5: "))
     playerA = input("Write the full name of the tennis player who is going to serve first: ")
     playerB = input("Write the full name of the tennis player who is going to serve second: ")
+    if_proxy = input("Do you want to use a proxy? ")
+    if if_proxy.lower() == "yes":
+        proxy = input("Input your proxy - (ip):(port) ")
+    else:
+        proxy = None
 
-    rankingAndIdA = rankAndId(playerA)
-    rankingAndIdB = rankAndId(playerB)
+    rankingAndIdA = rankAndId(playerA, proxy)
+    rankingAndIdB = rankAndId(playerB, proxy)
 
     rankA = rankingAndIdA[0]
     rankB = rankingAndIdB[0]
@@ -132,8 +141,8 @@ def getInputs():
     playerA = rankingAndIdA[2]
     playerB = rankingAndIdB[2]
 
-    dataPlayerA = playerData(rankB, idA)
-    dataPlayerB = playerData(rankA, idB)
+    dataPlayerA = playerData(rankB, idA, proxy)
+    dataPlayerB = playerData(rankA, idB, proxy)
 
     firstserveA = dataPlayerA[2]/100
     winsfirstA = (dataPlayerA[3] + dataPlayerB[6])/200
