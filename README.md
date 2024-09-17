@@ -56,4 +56,4 @@ Notes and Limitations
 - Simulation Accuracy: The simulation is based on probabilities and may not perfectly replicate real-world results, especially for edge cases like rare player matchups or unconventional statistics.
 
 # License
-This project is licensed under the MIT License.
+This project is licensed under the Apache License 2.0.
